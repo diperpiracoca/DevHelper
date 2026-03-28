@@ -26,7 +26,6 @@ yarn-error.log
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-!.vscode/mcp.json
 .history/*
 
 # Miscellaneous
@@ -43,8 +42,10 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-#enviroments
-devhelper-web/src/environments/
+# Firebase
+.firebase
+*-debug.log
+.runtimeconfig.json
 
 
 # Enviroments
