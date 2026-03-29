@@ -2,3 +2,9 @@
 
 @import 'tailwindcss';
 @plugin "daisyui";
+
+@plugin "daisyui" {
+    themes: lofi --default, black --prefersdark;
+}
+
+@custom-variant dark (&:where([data-theme=black], [data-theme=black] *));
