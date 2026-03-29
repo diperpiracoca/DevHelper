@@ -3,6 +3,7 @@
 .btn-square {
     @apply rounded-xl;
 }
+
 .btn-light {
     @apply bg-zinc-100 text-base-100 hover:bg-zinc-400;
 }
