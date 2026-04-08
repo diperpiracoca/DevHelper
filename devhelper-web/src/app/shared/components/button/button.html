@@ -1,0 +1,7 @@
+<button class="btn btn-{{severity()}}" [ngClass]="{'px-7': isLoandig()}" (click)="onClick.emit()">
+    @if(isLoandig()){
+    <span class="loading loading-infinity loading-sm"></span>
+    }@else{
+    {{label()}}
+    }
+</button>

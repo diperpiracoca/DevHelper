@@ -98,9 +98,10 @@ export abstract class BaseRepository<T extends { id?: string }> {
     return this.$userCollectionRef().pipe(
       switchMap(ref => {
         if (!ref) return EMPTY;
-        const docRef = doc(ref, id);
-        return runInInjectionContext(this._injector, () =>
-          from(deleteDoc(docRef))
+        return runInInjectionContext(this._injector, () => {
+          const docRef = doc(ref, id);
+          return from(deleteDoc(docRef))
+        }
         );
       })
     );

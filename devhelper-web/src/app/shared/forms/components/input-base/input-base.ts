@@ -25,8 +25,8 @@ export class InputBase<T = string> implements ControlValueAccessor {
   private onChange: (value: T) => void = () => { };
   private onTouched: () => void = () => { };
 
-  writeValue(value: T): void {
-    this.value = value || null;
+  writeValue(value: T | null): void {
+    this.value = value;
   }
 
   registerOnChange(fn: any): void {

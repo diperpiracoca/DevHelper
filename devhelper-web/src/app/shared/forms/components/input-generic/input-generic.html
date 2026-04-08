@@ -1,5 +1,5 @@
 <label class="label">{{label()}}:</label>
-<div class="input input-md  validator">
+<div class="input input-md" [class.validator]="isInvalid">
     <input [id]="inputId()" [value]="value" (input)="onInput($event)" [attr.aria-invalid]="isInvalid ? true : null"
         (blur)="handleBlur()" [disabled]="isDisabled" [type]="type()" />
 </div>
