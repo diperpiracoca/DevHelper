@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Authenticator } from '../../services/authenticator';
+import { Authenticator } from '../../../shared/service/authenticator';
 
 @Component({
   selector: 'app-login',
@@ -10,8 +10,8 @@ import { Authenticator } from '../../services/authenticator';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export default class Login {
-
   private _authenticator = inject(Authenticator);
+
   loginWithGoogle() {
     this._authenticator.loginWithGoogle();
   }

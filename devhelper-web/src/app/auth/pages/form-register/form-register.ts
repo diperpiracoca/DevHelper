@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Authenticator } from '../../services/authenticator';
+import { Authenticator } from '../../../shared/service/authenticator';
 import { EmailInput } from '../../components/email-input/email-input';
 import { PasswordInput } from '../../components/password-input/password-input';
 import firebasePasswordValidator from '../../forms/validators/password.validator';
