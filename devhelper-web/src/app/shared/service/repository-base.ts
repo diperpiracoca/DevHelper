@@ -2,7 +2,7 @@ import { inject, Injectable, Injector, resource, runInInjectionContext } from '@
 import { toSignal } from '@angular/core/rxjs-interop';
 import { addDoc, collection, collectionData, deleteDoc, doc, docData, updateDoc, Firestore, FirestoreDataConverter, setDoc, DocumentData, CollectionReference } from '@angular/fire/firestore';
 import { Observable } from 'rxjs/internal/Observable';
-import { Authenticator } from '../../auth/services/authenticator';
+import { Authenticator } from './authenticator';
 import { from } from 'rxjs/internal/observable/from';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { map } from 'rxjs/internal/operators/map';
@@ -26,8 +26,6 @@ export abstract class BaseRepository<T extends { id?: string }> {
   protected _user = this._auth.user;
   protected colRefSignal = toSignal(this.$userCollectionRef(), { initialValue: undefined });
 
-
-
   $userCollectionRef() {
     return this._auth.$userObservable().pipe(
       filter((u): u is User => !!u),
@@ -44,20 +42,6 @@ export abstract class BaseRepository<T extends { id?: string }> {
         return undefined;
       }));
   }
-
-  getAllSignal() {
-    return toSignal(
-      this.$userCollectionRef().pipe(
-        switchMap(ref => {
-          if (!ref) return of([]);
-          return runInInjectionContext(this._injector, () =>
-            collectionData(ref, { idField: 'id' }) as Observable<(T & { id: string })[]>
-          );
-        })),
-      { initialValue: [], injector: this._injector }
-    );
-  }
-
 
   getAllResource() {
     return resource({
@@ -80,18 +64,40 @@ export abstract class BaseRepository<T extends { id?: string }> {
     });
   }
 
+  getByIdResource(id: string) {
+    return resource({
+      loader: async () => {
+        const ref = await firstValueFrom(this.$userCollectionRef());
+        if (!ref) return EMPTY;
+        const docRef = doc(ref, id);
+        return await firstValueFrom(
+          runInInjectionContext(this._injector, () =>
+            docData(docRef, { idField: 'id' }) as any
+          )
+        );
+      }
+    });
+  }
+
+  getAll() {
+    return this.$userCollectionRef().pipe(
+      switchMap(ref => {
+        if (!ref) return of([]);
+        return runInInjectionContext(this._injector, () =>
+          collectionData(ref, { idField: 'id' }) as Observable<(T & { id: string })[]>
+        );
+      }));
+  }
+
   getById(id: string) {
-    return toSignal(
-      this.$userCollectionRef().pipe(
-        switchMap(ref => {
-          if (!ref) return of(undefined);
-          const docRef = doc(ref, id);
-          return runInInjectionContext(this._injector, () =>
-            docData(docRef) as Observable<T & { id: string }>
-          );
-        })),
-      { initialValue: undefined, injector: this._injector }
-    );
+    return this.$userCollectionRef().pipe(
+      switchMap(ref => {
+        if (!ref) return EMPTY;
+        const docRef = doc(ref, id);
+        return runInInjectionContext(this._injector, () =>
+          docData(docRef) as Observable<T & { id: string }>
+        );
+      }));
   }
 
   delete(id: string) {
