@@ -10,6 +10,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 })
 export class Button {
   severity = input<'neutral' | 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error'>();
+  type = input<string>();
   btnClass = input<string>();
   label = input<string>();
   isLoandig = input<boolean>(false);
