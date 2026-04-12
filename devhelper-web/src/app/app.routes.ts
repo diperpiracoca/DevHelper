@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { RedirectCommand, Router, Routes } from '@angular/router';
-import { Authenticator } from './auth/services/authenticator';
+import { Authenticator } from './shared/service/authenticator';
 import { routesAuth } from './auth';
 
 export const routes: Routes = [

@@ -12,7 +12,6 @@ export class Authenticator {
   private _auth = inject(Auth);
   private _injector = inject(Injector);
   private _router = inject(Router);
-
   readonly initialized = signal(false);
   readonly user = toSignal(this.$userObservable(), { initialValue: null });
   readonly isLoggedIn = computed(() => !!this.user());
@@ -36,33 +35,29 @@ export class Authenticator {
       });
   }
 
-  login(email: string, password: string) {
-    return signInWithEmailAndPassword(this._auth, email, password)
-      .then(result => {
-        this._router.navigate(['/']);
-      });
+  async login(email: string, password: string) {
+    const result = await signInWithEmailAndPassword(this._auth, email, password);
+    this._router.navigate(['/']);
   }
 
-  loginWithGoogle() {
+  async loginWithGoogle() {
     const provider = new GoogleAuthProvider();
 
-    return setPersistence(this._auth, browserLocalPersistence)
-      .then(() =>
-        signInWithPopup(this._auth, provider)
-      )
-      .then(result => {
-        this._router.navigate(['/']);
-      })
-      .catch(error => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        const email = error.customData?.email;
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        console.error('Error Google Login', { errorCode, errorMessage, email, credential });
-      });
+    try {
+      await setPersistence(this._auth, browserLocalPersistence);
+      const result = await signInWithPopup(this._auth, provider);
+      this._router.navigate(['/']);
+    } catch (error: any) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      const email = error.customData?.email;
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      console.error('Error Google Login', { errorCode, errorMessage, email, credential });
+    }
   }
 
-  logout() {
-    return this._auth.signOut().then(v => this._router.navigate(['/login']));
+  async logout() {
+    const v = await this._auth.signOut();
+    return await this._router.navigate(['/login']);
   }
 }
