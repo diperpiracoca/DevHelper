@@ -31,6 +31,7 @@ export class VaultSecurity {
 
   readonly isSecureModalOpen = signal(false);
   readonly isUnlockModalOpen = signal(false);
+  private _pendingAction = signal<(() => void) | null>(null);
 
   readonly repositoryStatus = this._repository.status;
 
@@ -87,6 +88,21 @@ export class VaultSecurity {
     const s = this._repository.status();
     if (s === VAULT_STATUS.NO_CREATE) {
       this.openSetupVaultModal();
+    }
+  });
+
+  private _executePendingOnUnlock = effect(() => {
+    if (this.vaultStatus() === VAULT_STATUS.DESENCRYPTED && this._pendingAction()) {
+      this.isUnlockModalOpen.set(false);
+      const action = this._pendingAction()!;
+      this._pendingAction.set(null);
+      action();
+    }
+  });
+
+  private _clearPendingOnCancel = effect(() => {
+    if (!this.isUnlockModalOpen() && this.vaultStatus() === VAULT_STATUS.ENCRYPTED) {
+      this._pendingAction.set(null);
     }
   });
 
@@ -217,14 +233,17 @@ export class VaultSecurity {
     this._vaultKey.set(undefined);
   }
 
-  showModal() {
+  showModal(action?: () => void) {
     const s = this.vaultStatus();
     if (s === VAULT_STATUS.NO_CREATE) {
       this.isSecureModalOpen.set(true);
       return;
     }
     if (s === VAULT_STATUS.ENCRYPTED) {
+      this._pendingAction.set(action ?? null);
       this.isUnlockModalOpen.set(true);
+    } else if (action) {
+      action();
     }
   }
 

@@ -80,7 +80,6 @@ export class ModalUnlockVault {
     this.errorMessage.set(undefined);
     try {
       await this._vault.unlockWithPin(this._unlockForm.controls.pin.value);
-      this.isOpen.set(false);
     } catch (error: any) {
       this.errorMessage.set(error.message);
       this._unlockForm.controls.pin.reset();
@@ -96,7 +95,6 @@ export class ModalUnlockVault {
     this.errorMessage.set(undefined);
     try {
       await this._vault.unlockWithPasskey();
-      this.isOpen.set(false);
     } catch (error: any) {
       this.errorMessage.set(error.message);
     } finally {

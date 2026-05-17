@@ -41,7 +41,7 @@ export class PasswordList {
 
   async openAdd() {
     if (!this._vault.isUnlocked()) {
-      this._vault.showModal();
+      this._vault.showModal(() => this.openAdd());
       return;
     }
     this.editPassword.set(null);
@@ -51,7 +51,7 @@ export class PasswordList {
 
   async openEdit(item: PasswordI) {
     if (!this._vault.isUnlocked()) {
-      this._vault.showModal();
+      this._vault.showModal(() => this.openEdit(item));
       return;
     }
     this.editPassword.set(item.password.cipher.length > 0 ? '****' : '');
@@ -61,11 +61,11 @@ export class PasswordList {
   }
 
   async viewPassword(item: PasswordI) {
-    const vaultKey = this._vault.getVaultKey();
-    if (!vaultKey) {
-      this._vault.showModal();
+    if (!this._vault.isUnlocked()) {
+      this._vault.showModal(() => this.viewPassword(item));
       return;
     }
+    const vaultKey = this._vault.getVaultKey()!;
     this.viewStatus.update(v => { v.password = item; v.loading = true; v.error = ''; return v; });
     this.isViewModalOpen.set(true);
     try {
@@ -91,7 +91,7 @@ export class PasswordList {
     }
     const vaultKey = this._vault.getVaultKey();
     if (!vaultKey) {
-      this._vault.showModal();
+      this._vault.showModal(() => this.add());
       return;
     }
     const { name, password, secure } = f.value;
